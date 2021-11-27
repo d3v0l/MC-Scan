@@ -1,6 +1,7 @@
 [
     {
-        "host": "https://node-1.mc-scan.ga",
-        "id": "1"
+        "host": "http://your_node_ip_or_host",
+        "id": "1",
+        "secret": "your_node_secret"
     }
 ]

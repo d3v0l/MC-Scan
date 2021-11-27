@@ -43,7 +43,7 @@ Router.post('/', limiter, async (req, res) => {
         })
     }
     if(!(new RegExp(`(zip|jar)`).test(req.files.file.name))){
-        res.send({
+        return res.send({
             status: {
                 success: false,
                 error: true,
@@ -53,23 +53,25 @@ Router.post('/', limiter, async (req, res) => {
         })
     }
     let file = req.files.file
-    let folder = await fs.mkdirSync(path.join(`${process.cwd()}/storage/${id}`), {recursive: true})
+    let folder = await fs.mkdirSync(path.join(`${__dirname}/../../storage/${id}`), {recursive: true})
     let pth = path.join(`${folder}/${file.name}`)
-    console.log(pth)
     file.mv(pth, async function(err) {
-        if (err) return res.json({
-            status: {
-                success: false,
-                error: true,
-                message: "SOMETHING_WENT_WRONG",
-                code: 500
-            }
-        })
-        console.log("?")
+        if (err) {
+            //res.status(500) could not set because Axios fails to handle it and you need to catch it.Error: Invalid or unsupported zip format. No END header found
+            return res.json({
+                status: {
+                    success: false,
+                    error: true,
+                    message: "SOMETHING_WENT_WRONG",
+                    code: 500
+                }
+            })
+        }
         let ext = file.name.split('.')
         if(ext[ext.length-1] === 'zip'){
             let responseUnzip = await unzip(pth, folder)
             if(responseUnzip) {
+                fs.unlinkSync(pth)
                 await ForScans.findOneAndUpdate({id: id}, {recieved: true})
                 res.json({
                     status: {
@@ -81,6 +83,7 @@ Router.post('/', limiter, async (req, res) => {
                     link: "https://mc-scan.ga/summary?id="+id
                   })
             } else {
+                //res.status(500) could not set because Axios fails to handle it and you need to catch it.Error: Invalid or unsupported zip format. No END header found
                 res.json({
                     status: {
                         error: true,

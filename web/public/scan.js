@@ -40,20 +40,33 @@ window.onload = (e) => {
                         status.innerHTML = `${pIcon} Uploading: ${Number.parseFloat(p.loaded / 1024 / 1024).toFixed(2)}MB / ${Number.parseFloat(p.total / 1024 / 1024).toFixed(2)}MB`
                     }
                 }).then((data2) => {
+                    console.log(data2.data.status.message)
                     form.style.display=""
                     status.style.display=""
                     if(data2.data.status.success){
                         status.innerHTML=`${pIcon} Summary: <a href="${data2.data.link}">${data2.data.link}</a>`
+                        window.location = data2.data.link
                     } else {
-                        if(data.data.status.message === "INVALID_FILE"){
+                        if(data2.data.status.message === "INVALID_FILE"){
                             status.innerHTML=`${pIcon} Error: Please provide a .jar or .zip file.`
+                            button.style.display=""
                         } else if(data2.data.status.message === "SOMETHING_WENT_WRONG") {
-                            status.innerHTML=`${pIcon} Error: Something went wrong.`
+                            button.style.display=""
+                            status.innerHTML=`${pIcon} Error: Something went wrong. <br> Try uploading 10 plugins at a time.`
                         }
                     }
                 })
+                .catch(e=>{
+                    console.log(e)
+                    button.style.display=""
+                    status.innerHTML=`${pIcon} Error: Something went wrong. <br> See console log.`
+                })
             }
         })
-        .catch(e=>console.log(e))
+        .catch(e=>{
+            console.log(e)
+            button.style.display=""
+            status.innerHTML=`${pIcon} Error: Something went wrong. <br> See console log.`
+        })
     })
 }

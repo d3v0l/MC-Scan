@@ -1,6 +1,6 @@
 {
     "PORT": "81",
-    "NODE": "",
-    "SECRET": "",
-    "MONGO": ""
+    "NODE": "1",
+    "SECRET": "your_node_secret",
+    "MONGO": "mongo_uri_here"
 }

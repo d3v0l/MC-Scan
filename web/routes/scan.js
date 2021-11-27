@@ -4,9 +4,9 @@ const nanoid = customAlphabet("1234567890", 16)
 const ForScanSchema = require('../../database/forscans.js')
 const NodeManager = require('../managers/NodeManager')
 const rateLimit = require("express-rate-limit");
-
+const path = require('path');
 Router.get('/', (req, res) => {
-    res.render('scan.ejs')
+    res.render(path.join(__dirname+'/../views/scan.ejs'))
 })
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,

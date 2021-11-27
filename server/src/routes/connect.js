@@ -35,7 +35,7 @@ Router.post('/', (req, res) => {
         })
     }
     config["NODE"] = String(node)
-    fs.writeFileSync(`${process.cwd()}/config.json`, JSON.stringify(config, null, 4))
+    fs.writeFileSync(`${__dirname}/../../config.json`, JSON.stringify(config, null, 4))
     return res.send({
         status: {
             online: true,

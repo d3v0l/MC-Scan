@@ -11,7 +11,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json())
 app.set('view engine', 'ejs');
 app.use('/static', express.static('public'))
-app.use(morgan('tiny'))
+app.use(morgan('[Node] :method :url :status :res[content-length] - :response-time ms'))
 app.use(fileUpload({limits: { fileSize: 50 * 1024 * 1024 }}));
 
 app.use(require('./routes'))
@@ -19,7 +19,11 @@ app.use(require('./routes'))
 mongoose.connect(require('../config.json')["MONGO"], {
     useUnifiedTopology: true,
     useNewUrlParser: true,
-}, (mongoose)=>{
+}, (err)=>{
+    if(err) { 
+        console.log(err)
+        process.exit(1)
+    }
     console.log(`[Node] Connected to the database `)
     Scanner.init()
 })

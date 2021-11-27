@@ -1,3 +1,4 @@
 {
-    "MONGO": ""
+    "MONGO": "mongo_uri_here",
+    "PORT": "80"
 }

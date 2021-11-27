@@ -11,7 +11,7 @@ module.exports = class NodeManager{
     }
     static refresh() {
         nodes.forEach(node => {
-            axios.post(`${node.host}/connect?node=${node.id}&secret=GNyw5rc7syrdZyZndfxc`).then((data)=>{
+            axios.post(`${node.host}/connect?node=${node.id}&secret=${node.secret}`).then((data)=>{
                 if(data.data.status.success & data.data.status.online) {
                     cache.set(node.id, node)
                 }
@@ -20,7 +20,7 @@ module.exports = class NodeManager{
         })
     }
     static getNode() {
-        return nodes[0]
+        return [...cache.entries()][Math.floor(Math.random()*cache.size)][1]
     }
 
 }

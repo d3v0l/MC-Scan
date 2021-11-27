@@ -18,7 +18,7 @@ module.exports=class Scanner{
                 if(!result) return;
                 else {
                     console.log(c.blueBright("[INFO]") + ` Scanning ${result.id}`)
-                    this.scan(path.join(`${process.cwd()}/storage/${result.id}`), result.id, result.sumbitedOn)
+                    this.scan(path.join(`${__dirname}/../storage/${result.id}`), result.id, result.sumbitedOn)
                 }
             }
         }, 5000)
@@ -30,6 +30,7 @@ module.exports=class Scanner{
             await zip.extractAllTo(target, true);
             return true;
         }catch(e){
+            console.log(e)
             return false;
         }
         
@@ -37,11 +38,18 @@ module.exports=class Scanner{
     }
 
     static async scan(dir, id, sumbitedOn) {
-        if(!fs.existsSync(dir)) return;
-        if(!id) return;
+        if(!fs.existsSync(dir)) {
+            scanning = false;
+            return;
+        };
+        if(!id) {
+            scanning = false;
+            return;
+        };
         let pluginsArray = fs.readdirSync(dir)
         pluginsArray = pluginsArray.filter(plugin => plugin.includes('.jar'))
         if(pluginsArray.length < 1) {
+            scanning = false;
             console.log(c.red("[ERROR]") + ` No plugins found in the plugins folder. ${c.red(dir)}`)
             let scanned = new ScannedSchema({
                 id,
@@ -67,8 +75,9 @@ module.exports=class Scanner{
             new Promise((res, rej) => {
                 let zip;
                 try {
-                    zip = new AdmZip(`${process.cwd()}/storage/${id}/${plugin}`);
+                    zip = new AdmZip(path.join(`${__dirname}/../storage/${id}/${plugin}`));
                 } catch (e) {
+                    scanning = false;
                     scanned.scanErrors.push("Error: "+e.message)
                     console.log(scanned)
                     scanned.save()
