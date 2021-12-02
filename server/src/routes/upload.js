@@ -5,6 +5,8 @@ const path = require('path')
 const { unzip } = require('../scanner')
 const rateLimit = require("express-rate-limit");
 const ForScans = require('../../../database/forscans.js')
+const {customAlphabet} = require('nanoid')
+const nanoid = customAlphabet("1234567890", 12)
 
 Router.get('/', (req, res) => {
     res.send({
@@ -21,17 +23,6 @@ const limiter = rateLimit({
   max: 1
 });
 Router.post('/', limiter, async (req, res) => {
-    if(!req.query || !req.query.id){
-        return res.send({
-            status: {
-                success: false,
-                error: true,
-                message: "INVALID_QUERY",
-                code: 400,
-            }
-        })
-    }
-    let {id} = req.query
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.send({
             status: {
@@ -52,6 +43,9 @@ Router.post('/', limiter, async (req, res) => {
             }
         })
     }
+    let forScan = new ForScans({
+        id: nanoid()
+    })
     let file = req.files.file
     let folder = await fs.mkdirSync(path.join(`${__dirname}/../../storage/${id}`), {recursive: true})
     let pth = path.join(`${folder}/${file.name}`)

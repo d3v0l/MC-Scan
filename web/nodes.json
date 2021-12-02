@@ -1,7 +1,0 @@
-[
-    {
-        "host": "http://your_node_ip_or_host",
-        "id": "1",
-        "secret": "your_node_secret"
-    }
-]

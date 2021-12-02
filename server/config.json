@@ -1,6 +1,7 @@
 {
-    "PORT": "81",
+    "PORT": "80",
+    "URL": "http://localhost",
     "NODE": "1",
-    "SECRET": "your_node_secret",
-    "MONGO": "mongo_uri_here"
+    "SECRET": "sadasdsa",
+    "MONGO": "mongodb+srv://MC-Scan:mcscan1234-4321@cluster0.ll0fp.mongodb.net/MCScan?retryWrites=true&w=majority"
 }

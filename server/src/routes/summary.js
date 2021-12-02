@@ -1,6 +1,6 @@
 const Router = require('express').Router()
-const ForScanSchema = require('../../database/forscans')
-const ScannedSchema = require('../../database/scanned')
+const ForScanSchema = require('../../../database/forscans')
+const ScannedSchema = require('../../../database/scanned')
 const path = require('path');
 
 Router.get("/", async (req, res) => {
