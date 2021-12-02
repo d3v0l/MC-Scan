@@ -25,11 +25,11 @@ module.exports=class Scanner{
     }
 
     static async unzip(file, target) {
-        try{
+        try {
             let zip = new AdmZip(file);
             await zip.extractAllTo(target, true);
             return true;
-        }catch(e){
+        } catch (e) {
             console.log(e)
             return false;
         }

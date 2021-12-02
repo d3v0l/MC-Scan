@@ -29,7 +29,23 @@ window.onload = (e) => {
             }
         })
         .then(data => {
-            
+            if(data.data.status.code === 200){
+                button.style.display=""
+                status.innerHTML=`${pIcon} Summary: <a href="${data.data.link}">${data.data.link}</a>`
+            } else if (data.data.status.code === 500) {
+                console.log(data.data)
+                button.style.display=""
+                status.innerHTML=`${pIcon} Error: Something went wrong. <br> See console log.`
+            } else if (data.data.status.code === 400 && data.data.status.message == "INVALID_FILE") {
+                status.style.display=""
+                status.innerHTML=`${pIcon} Error: Please provide a .jar or .zip file.`
+                return;
+            } else if (data.data.status.code === 400 && data.data.status.message == "NO_FILE_PROVIDED") {
+                status.style.display=""
+                status.innerHTML=`${pIcon} Error: Please choose one file.`
+                return;
+            }
+
         })
         .catch(e=>{
             console.log(e)

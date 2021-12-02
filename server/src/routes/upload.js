@@ -6,7 +6,7 @@ const { unzip } = require('../scanner')
 const rateLimit = require("express-rate-limit");
 const ForScans = require('../../../database/forscans.js')
 const {customAlphabet} = require('nanoid')
-const nanoid = customAlphabet("1234567890", 12)
+const nanoid = customAlphabet("1234567890", 16)
 
 Router.get('/', (req, res) => {
     res.send({
@@ -47,7 +47,7 @@ Router.post('/', limiter, async (req, res) => {
         id: nanoid()
     })
     let file = req.files.file
-    let folder = await fs.mkdirSync(path.join(`${__dirname}/../../storage/${id}`), {recursive: true})
+    let folder = await fs.mkdirSync(path.join(`${__dirname}/../../storage/${forScan.id}`), {recursive: true})
     let pth = path.join(`${folder}/${file.name}`)
     file.mv(pth, async function(err) {
         if (err) {
@@ -66,16 +66,23 @@ Router.post('/', limiter, async (req, res) => {
             let responseUnzip = await unzip(pth, folder)
             if(responseUnzip) {
                 fs.unlinkSync(pth)
-                await ForScans.findOneAndUpdate({id: id}, {recieved: true})
-                res.json({
-                    status: {
-                        error: false,
-                        success: true,
-                        message: "SUCCESS",
-                        code: 200
-                    },
-                    link: "https://mc-scan.ga/summary?id="+id
-                  })
+                new Promise((resolve, reject) => {
+                    forScan.save()
+                    .then(doc => resolve(doc))
+                    .catch(e => reject(e))
+                })
+                .then(doc => {
+                    res.json({
+                        status: {
+                            error: false,
+                            success: true,
+                            message: "SUCCESS",
+                            code: 200
+                        },
+                        link: `${require('../../config.json')["URL"]}/summary?id=${doc.id}`
+                    })
+                })
+                
             } else {
                 //res.status(500) could not set because Axios fails to handle it and you need to catch it.Error: Invalid or unsupported zip format. No END header found
                 res.json({
@@ -90,16 +97,35 @@ Router.post('/', limiter, async (req, res) => {
                 fsExtra.removeSync(folder)
             }
         } else {
-            await ForScans.findOneAndUpdate({id: id}, {recieved: true})
-            res.json({
-                status: {
-                    error: false,
-                    success: true,
-                    message: "SUCCESS",
-                    code: 200
-                },
-                link: "https://mc-scan.ga/summary?id="+id
-              })
+            new Promise((resolve, reject) => {
+                forScan.save()
+                .then(doc => resolve(doc))
+                .catch(err => reject(err))
+            })
+            .then(doc => {
+                console.log(doc)
+                res.json({
+                    status: {
+                        error: false,
+                        success: true,
+                        message: "SUCCESS",
+                        code: 200
+                    },
+                    link: "https://mc-scan.ga/summary?id="+doc.id
+                })
+            })
+            .catch(e => {
+                console.log(e)
+                res.json({
+                    status: {
+                        error: true,
+                        success: false,
+                        message: "SOMETHING_WENT_WRONG",
+                        code: 500
+                    }
+                })
+            })
+            
         }
     });
 })
